@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Left bracket [ -->
+  <path d="M24 12H16V52H24V48H20V16H24V12Z" fill="#374151"/>
+  <!-- Right bracket ] -->
+  <path d="M40 12H48V52H40V48H44V16H40V12Z" fill="#374151"/>
+</svg>
