@@ -25,11 +25,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to render chat history
-  function renderChatHistory() {
+  async function renderChatHistory() {
     chatContainer.innerHTML = "";
-    // Always show the welcome message at the top
+
+    // Get the current tab
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    // Try to get the problem title from the content script
+    let problemTitle = "this problem";
+    try {
+      const response = await chrome.tabs.sendMessage(tab.id, {
+        action: "getProblemInfo",
+      });
+      if (response && response.title) {
+        problemTitle = response.title;
+      }
+    } catch (error) {
+      console.log("Could not get problem title:", error);
+    }
+
+    // Show the welcome message with the problem title
     addMessage(
-      "Hi! I'm here to help you solve this LeetCode problem. What would you like to know?"
+      `Hi! I'm here to help you solve "${problemTitle}". What would you like to know?`
     );
     chatHistory.forEach((msg) => addMessage(msg.content, msg.isUser));
   }
@@ -163,4 +183,12 @@ document.addEventListener("DOMContentLoaded", function () {
         clearChatHistory(tabId);
       }
     });
+
+  // Listen for clearChat message from content script
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "clearChat" && currentTabId === sender.tab?.id) {
+      clearChatHistory(currentTabId);
+      renderChatHistory();
+    }
+  });
 });
