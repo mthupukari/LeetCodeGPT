@@ -3,13 +3,7 @@ function extractProblemInfo() {
   console.log("Extracting problem info...");
 
   // Try different selectors for the title
-  const titleSelectors = [
-    '[data-cy="question-title"]',
-    ".mr-2.text-lg",
-    "h3.text-lg",
-    ".text-title-large",
-    '[data-cy="question-title"] span',
-  ];
+  const titleSelectors = [".text-title-large"];
 
   let problemTitle = "";
   for (const selector of titleSelectors) {
@@ -22,18 +16,24 @@ function extractProblemInfo() {
   }
 
   // Try different selectors for the description
-  const descriptionSelectors = [
-    '[data-cy="question-content"]',
-    ".content__u3I1",
-    ".question-content__JfgR",
-    '[data-cy="question-content"] div',
-  ];
+  const descriptionSelectors = [".elfjS"];
 
   let problemDescription = "";
   for (const selector of descriptionSelectors) {
     const element = document.querySelector(selector);
     if (element) {
-      problemDescription = element.innerHTML;
+      // Get all paragraph elements within the description
+      const paragraphs = element.querySelectorAll("p");
+      if (paragraphs.length > 0) {
+        // Join all paragraph texts with newlines
+        problemDescription = Array.from(paragraphs)
+          .map((p) => p.textContent.trim())
+          .filter((text) => text) // Remove empty paragraphs
+          .join("\n\n");
+      } else {
+        // Fallback to getting all text content if no paragraphs found
+        problemDescription = element.textContent.trim();
+      }
       console.log(
         `Found description using selector "${selector}":`,
         problemDescription.substring(0, 100) + "..."
@@ -43,12 +43,7 @@ function extractProblemInfo() {
   }
 
   // Try different selectors for the code editor
-  const codeSelectors = [
-    ".monaco-editor",
-    ".CodeMirror",
-    ".ace_editor",
-    '[data-cy="code-editor"]',
-  ];
+  const codeSelectors = [".monaco-editor"];
 
   let codeEditor = "";
   for (const selector of codeSelectors) {
@@ -65,11 +60,6 @@ function extractProblemInfo() {
 
   // Log the DOM structure for debugging
   console.log("Current URL:", window.location.href);
-  console.log(
-    "Document body:",
-    document.body.innerHTML.substring(0, 500) + "..."
-  );
-
   return {
     title: problemTitle,
     description: problemDescription,
@@ -93,63 +83,40 @@ async function getGPTResponseWithCustomPrompt(prompt, chatHistory) {
   const messages = [
     {
       role: "system",
-      content: `You are a helpful programming assistant that provides hints and guidance for LeetCode problems without giving away complete solutions. 
+      content: `You are a helpful and conversational coding assistant embedded inside LeetCode. The user is trying to solve coding problems on their own and wants guidance, not direct solutions. Your role is to help them understand concepts, explore ideas, and troubleshoot — step by step.
 
-Format your responses using HTML sections based on what's relevant to the user's question. Use these section templates as needed:
+      DO NOT give full code or final answers unless the user clearly asks for it (e.g., "show me the solution").
 
-<div class="gpt-section">
-  <div class="gpt-section-title">Problem Understanding</div>
-  <div class="gpt-section-content">
-    <p>Brief explanation of the problem in 2-3 sentences.</p>
-  </div>
-</div>
+      Be collaborative and conversational, like a tutor or pair programmer. Ask clarifying or leading questions to help the user think. Always explain *why* a technique works when you discuss one.
 
-<div class="gpt-section">
-  <div class="gpt-section-title">Approach</div>
-  <div class="gpt-section-content">
-    <p>High-level overview of the solution approach.</p>
-  </div>
-</div>
+      When the user asks a general question like "how do I solve this?", respond lightly — give a high-level suggestion, ask a guiding question, or highlight where to begin. Do NOT immediately give a full strategy, pseudocode, or structured breakdown unless the user says they're stuck or asks for more.
 
-<div class="gpt-section">
-  <div class="gpt-section-title">Solution Steps</div>
-  <div class="gpt-section-content">
-    <p>1. First step explanation</p>
-    <p>2. Second step explanation</p>
-    <p>3. Third step explanation</p>
-  </div>
-</div>
+      When appropriate, you may use structured HTML blocks to organize explanations clearly. Use this format only when it will improve clarity:
 
-<div class="gpt-section">
-  <div class="gpt-section-title">Implementation Hints</div>
-  <div class="gpt-section-content">
-    <p>Specific hints about implementation details.</p>
-    <p>Use <code>code</code> tags for code snippets.</p>
-  </div>
-</div>
+      <div class="gpt-section">
+        <div class="gpt-section-title">[Section Title]</div>
+        <div class="gpt-section-content">
+          <p>[Paragraph content]</p>
+        </div>
+      </div>
 
-<div class="gpt-section">
-  <div class="gpt-section-title">Next Steps</div>
-  <div class="gpt-section-content">
-    <p>What to try next or what to focus on.</p>
-  </div>
-</div>
+      Use titles such as: "Problem Understanding", "Approach", "Edge Cases", "Pseudocode", "Next Hint", and "Common Mistake".
 
-Rules:
-1. Only include sections that are relevant to the user's question
-2. Keep each section concise and focused
-3. Use <code> tags for code snippets
-4. Do not use markdown syntax
-5. Keep paragraphs short and clear
-6. Use proper spacing between sections
-7. For simple questions, you can respond with just the relevant section(s) without using the full template structure
-8. Make sure you are not always giving away the solution, but rather providing hints and guidance unless the user asks for the solution`,
+      Only use the structured HTML format when the user:
+      - asks for a breakdown
+      - gets stuck
+      - needs clarification of multiple concepts
+
+      Otherwise, keep your replies casual and brief.
+
+      Be professional, supportive, and educational in tone. Never assume the user wants a direct answer right away — guide them.`,
     },
     {
       role: "user",
       content: prompt,
     },
   ];
+
   // Add the rest of the chat history (excluding the latest user message, which is already in the prompt)
   if (Array.isArray(chatHistory)) {
     chatHistory.forEach((msg) => {
@@ -159,6 +126,13 @@ Rules:
       });
     });
   }
+
+  // Log the messages being sent to GPT
+  console.log("Sending to GPT:\n", {
+    systemPrompt: messages[0].content,
+    userPrompt: messages[1].content,
+    chatHistory: chatHistory,
+  });
 
   // Send the API request to the background script
   return new Promise((resolve) => {
@@ -281,7 +255,15 @@ function setupSidebarChat() {
     messageDiv.className = `leetcode-gpt-message ${
       isUser ? "user" : "assistant"
     }`;
-    messageDiv.innerHTML = content;
+
+    if (isUser) {
+      // For user messages, just use text content
+      messageDiv.textContent = content;
+    } else {
+      // For assistant messages, parse markdown
+      messageDiv.innerHTML = marked.parse(content);
+    }
+
     chatContainer.appendChild(messageDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
@@ -332,13 +314,14 @@ Current Code: ${currentCode}
 
 Question: ${message}
 
-Please provide a clear, well-structured response with the following format:
-1. Start with a brief understanding of the problem
-2. Break down the approach into clear steps
-3. Provide specific hints or guidance
-4. End with a suggestion for next steps
+Please provide a clear, well-structured response. You can use markdown for formatting, including:
+- Code blocks with \`\`\`language
+- Lists with - or 1.
+- **Bold** and *italic* text
+- \`inline code\`
+- > Blockquotes
 
-Use proper HTML formatting with paragraphs and spacing. Do not use markdown syntax.
+Keep your response conversational and guide me through the problem.
       `;
       isFirstMessage = false;
     } else {
@@ -348,16 +331,16 @@ Current Code: ${currentCode}
 
 Question: ${message}
 
-Please provide a clear, well-structured response with proper HTML formatting and spacing. Do not use markdown syntax.
+Please provide a clear, well-structured response. You can use markdown for formatting.
       `;
     }
 
     try {
       const answer = await getGPTResponseWithCustomPrompt(prompt, chatHistory);
-      console.log("Raw GPT Response with HTML:", answer);
+      console.log("Raw GPT Response:", answer);
       clearInterval(thinkingInterval);
       chatHistory.push({ content: answer, isUser: false });
-      thinkingDiv.innerHTML = answer; // Replace with the real answer
+      thinkingDiv.innerHTML = marked.parse(answer); // Parse markdown in the response
     } catch (err) {
       clearInterval(thinkingInterval);
       thinkingDiv.innerHTML =
