@@ -26,14 +26,14 @@
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/problems/*"],
-      "js": ["config.js", "content.js"],
+      "js": ["marked.min.js", "config.js", "content.js"],
       "css": ["sidebar.css"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["sidebar.css"],
+      "resources": ["sidebar.css", "marked.min.js"],
       "matches": ["https://leetcode.com/*"]
     }
   ],

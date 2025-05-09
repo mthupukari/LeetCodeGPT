@@ -58,45 +58,104 @@
   color: var(--text-primary, #e2e2e2);
 }
 
-.gpt-section {
-  margin-bottom: 20px;
-}
-
-.gpt-section:last-child {
-  margin-bottom: 0;
-}
-
-.gpt-section-title {
-  color: #e2e2e2;
+/* Markdown Styles */
+.leetcode-gpt-message h1,
+.leetcode-gpt-message h2,
+.leetcode-gpt-message h3,
+.leetcode-gpt-message h4 {
+  color: #fff;
+  margin: 16px 0 8px 0;
   font-weight: 600;
-  font-size: 12px;
-  margin-bottom: 8px;
-  font-family: Menlo, Monaco, 'Courier New', monospace;
-  text-decoration: underline;
+  font-size: 14px;
 }
 
-.gpt-section-content {
-  color: var(--text-primary, #e2e2e2);
-  font-family: Menlo, Monaco, 'Courier New', monospace;
+.leetcode-gpt-message h1 { font-size: 16px; }
+.leetcode-gpt-message h2 { font-size: 15px; }
+.leetcode-gpt-message h3 { font-size: 14px; }
+.leetcode-gpt-message h4 { font-size: 13px; }
+
+.leetcode-gpt-message pre {
+  background: #1e1e1e;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 8px 0;
+  border: 1px solid #333;
 }
 
-.gpt-section-content p {
-  margin-bottom: 8px;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.gpt-section-content p:last-child {
-  margin-bottom: 0;
-}
-
-.gpt-section-content code {
+.leetcode-gpt-message code {
   background: #1e1e1e;
   padding: 2px 6px;
   border-radius: 4px;
   font-family: Menlo, Monaco, 'Courier New', monospace;
   font-size: 11px;
-  color: #dcdcaa;
+  color: #e9a820;
+}
+
+.leetcode-gpt-message pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: 11px;
+}
+
+.leetcode-gpt-message ul, 
+.leetcode-gpt-message ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.leetcode-gpt-message li {
+  margin: 4px 0;
+}
+
+.leetcode-gpt-message blockquote {
+  border-left: 4px solid #666;
+  margin: 8px 0;
+  padding: 8px 16px;
+  color: #999;
+  background: #1e1e1e;
+  border-radius: 0 4px 4px 0;
+}
+
+.leetcode-gpt-message p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.leetcode-gpt-message strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.leetcode-gpt-message em {
+  color: #ccc;
+  font-style: italic;
+}
+
+.leetcode-gpt-message hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 16px 0;
+}
+
+.leetcode-gpt-message table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
+}
+
+.leetcode-gpt-message th,
+.leetcode-gpt-message td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: left;
+}
+
+.leetcode-gpt-message th {
+  background: #1e1e1e;
+  font-weight: 600;
 }
 
 .leetcode-gpt-message.user {
@@ -107,11 +166,6 @@
 .leetcode-gpt-message.assistant {
   text-align: left;
   color: var(--text-primary, #e2e2e2);
-}
-
-.leetcode-gpt-message.assistant i {
-  color: var(--text-primary, #e2e2e2);
-  font-style: italic;
 }
 
 #leetcode-gpt-input {
@@ -137,61 +191,4 @@
     left: 0;
     right: 0;
   }
-}
-
-/* Markdown Styles */
-.leetcode-gpt-message pre {
-  background: #1e1e1e;
-  padding: 12px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin: 8px 0;
-}
-
-.leetcode-gpt-message code {
-  background: #1e1e1e;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: Menlo, Monaco, 'Courier New', monospace;
-  font-size: 11px;
-  color: #dcdcaa;
-}
-
-.leetcode-gpt-message pre code {
-  background: none;
-  padding: 0;
-  border-radius: 0;
-  color: inherit;
-}
-
-.leetcode-gpt-message ul, 
-.leetcode-gpt-message ol {
-  margin: 8px 0;
-  padding-left: 24px;
-}
-
-.leetcode-gpt-message li {
-  margin: 4px 0;
-}
-
-.leetcode-gpt-message blockquote {
-  border-left: 4px solid #666;
-  margin: 8px 0;
-  padding-left: 16px;
-  color: #999;
-}
-
-.leetcode-gpt-message p {
-  margin: 8px 0;
-  line-height: 1.6;
-}
-
-.leetcode-gpt-message strong {
-  color: #fff;
-  font-weight: 600;
-}
-
-.leetcode-gpt-message em {
-  color: #ccc;
-  font-style: italic;
 } 
