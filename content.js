@@ -67,6 +67,41 @@ function extractProblemInfo() {
   };
 }
 
+// Function to extract submission state and message
+function extractSubmissionState() {
+  const resultElement = document.querySelector(
+    '[data-e2e-locator="console-result"]'
+  );
+  if (!resultElement) return null;
+
+  const state = resultElement.textContent.trim();
+  let message = "";
+
+  // For runtime errors, get the error message
+  if (state === "Runtime Error") {
+    const errorElement = document.querySelector(".text-red-60");
+    if (errorElement) {
+      message = errorElement.textContent.trim();
+    }
+  }
+  // For wrong answers, get the test case details
+  else if (state === "Wrong Answer") {
+    const inputElement = document.querySelector(
+      ".group.relative.rounded-lg.bg-fill-4"
+    );
+    const outputElement = inputElement?.nextElementSibling;
+    const expectedElement = outputElement?.nextElementSibling;
+
+    if (inputElement && outputElement && expectedElement) {
+      message = `Input: ${inputElement.textContent.trim()}\nOutput: ${outputElement.textContent.trim()}\nExpected: ${expectedElement.textContent.trim()}`;
+    }
+  }
+
+  console.log("Submission state:", { state, message });
+
+  return { state, message };
+}
+
 // Refactor getGPTResponse to accept a custom prompt
 async function getGPTResponseWithCustomPrompt(prompt, chatHistory) {
   console.log("Getting GPT response...");
@@ -85,48 +120,48 @@ async function getGPTResponseWithCustomPrompt(prompt, chatHistory) {
       role: "system",
       content: `You are a helpful and conversational coding assistant embedded inside LeetCode. The user is trying to solve coding problems on their own and wants guidance, not direct solutions. Your role is to help them understand concepts, explore ideas, and troubleshoot — step by step.
 
-DO NOT give full code or final answers unless the user clearly asks for it (e.g., "show me the solution").
+      DO NOT give full code or final answers unless the user clearly asks for it (e.g., "show me the solution").
 
-Be collaborative and conversational, like a tutor or pair programmer. Ask clarifying or leading questions to help the user think. Always explain *why* a technique works when you discuss one.
+      Be collaborative and conversational, like a tutor or pair programmer. Ask clarifying or leading questions to help the user think. Always explain *why* a technique works when you discuss one.
 
-When the user asks a general question like "how do I solve this?", respond lightly — give a high-level suggestion, ask a guiding question, or highlight where to begin. Do NOT immediately give a full strategy, pseudocode, or structured breakdown unless the user says they're stuck or asks for more.
+      When the user asks a general question like "how do I solve this?", respond lightly — give a high-level suggestion, ask a guiding question, or highlight where to begin. Do NOT immediately give a full strategy, pseudocode, or structured breakdown unless the user says they're stuck or asks for more.
 
-When appropriate, you may use markdown formatting to organize your response. Here are some examples:
+      When appropriate, you may use markdown formatting to organize your response. Here are some examples:
 
-For a problem breakdown:
-## Problem Understanding
-Brief explanation of the problem...
+      For a problem breakdown:
+      ## Problem Understanding
+      Brief explanation of the problem...
 
-## Approach
-High-level overview...
+      ## Approach
+      High-level overview...
 
-## Edge Cases
-- Case 1: ...
-- Case 2: ...
+      ## Edge Cases
+      - Case 1: ...
+      - Case 2: ...
 
-For code examples:
-\`\`\`python
-def example():
-    # code here
-\`\`\`
+      For code examples:
+      \`\`\`python
+      def example():
+          # code here
+      \`\`\`
 
-For hints:
-> 💡 Hint: Think about...
+      For hints:
+      > 💡 Hint: Think about...
 
-For important points:
-**Key Point:** This is important because...
+      For important points:
+      **Key Point:** This is important because...
 
-For inline code:
-Use \`variable\` in your code.
+      For inline code:
+      Use \`variable\` in your code.
 
-Only use structured formatting when the user:
-- asks for a breakdown
-- gets stuck
-- needs clarification of multiple concepts
+      Only use structured formatting when the user:
+      - asks for a breakdown
+      - gets stuck
+      - needs clarification of multiple concepts
 
-Otherwise, keep your replies casual and brief.
+      Otherwise, keep your replies casual and brief.
 
-Be professional, supportive, and educational in tone. Never assume the user wants a direct answer right away — guide them.`,
+      Be professional, supportive, and educational in tone. Never assume the user wants a direct answer right away — guide them.`,
     },
     {
       role: "user",
@@ -315,14 +350,20 @@ function setupSidebarChat() {
 
     let prompt;
     const currentCode = extractProblemInfo().currentCode;
+    const submissionState = extractSubmissionState();
 
     if (isFirstMessage) {
       // First message: include title, description, and code
       prompt = `
-I'm working on this LeetCode problem:
-Title: ${problemInfo.title}
-Description: ${problemInfo.description}
-Current Code: ${currentCode}
+      I'm working on this LeetCode problem:
+      Title: ${problemInfo.title}
+      Description: ${problemInfo.description}
+      Current Code: ${currentCode}
+      ${
+        submissionState
+          ? `Submission State: ${submissionState.state}\n${submissionState.message}`
+          : ""
+      }
 
 Question: ${message}
 
@@ -337,9 +378,14 @@ Keep your response conversational and guide me through the problem.
       `;
       isFirstMessage = false;
     } else {
-      // Subsequent messages: only include code and user message
+      // Subsequent messages: include code, submission state, and user message
       prompt = `
 Current Code: ${currentCode}
+${
+  submissionState
+    ? `Submission State: ${submissionState.state}\n${submissionState.message}`
+    : ""
+}
 
 Question: ${message}
 
