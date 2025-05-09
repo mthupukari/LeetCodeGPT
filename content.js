@@ -287,20 +287,15 @@ function setupSidebarChat() {
 
   // Initial welcome message
   const problemInfo = extractProblemInfo();
+  const displayTitle = problemInfo.title
+    ? problemInfo.title.replace(/^\d+\.\s*/, "")
+    : "this problem";
   addMessage(
-    `Hi! I'm here to help you solve <b>${
-      problemInfo.title || "this problem"
-    }</b>. What would you like to know?`
+    `Hi! I'm here to help you solve <b>${displayTitle}</b>. What would you like to know?`
   );
 
   async function sendMessage(message) {
     if (!message.trim()) return;
-
-    // Check for test command
-    if (message === "!!TESTING") {
-      testStyling();
-      return;
-    }
 
     addMessage(message, true);
     userInput.value = "";
@@ -378,8 +373,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleLeetCodeGPT") {
     const sidebar = document.getElementById("leetcode-gpt-sidebar");
     if (sidebar) {
-      sidebar.style.display =
-        sidebar.style.display === "none" ? "flex" : "none";
+      const mainContainer = document.getElementById("qd-content");
+      const flexLayout = mainContainer?.querySelector(".flexlayout__layout");
+
+      if (sidebar.style.display === "none") {
+        // Show sidebar
+        sidebar.style.display = "flex";
+        if (flexLayout) {
+          flexLayout.style.width = "calc(100% - 350px)";
+        }
+      } else {
+        // Hide sidebar
+        sidebar.style.display = "none";
+        if (flexLayout) {
+          flexLayout.style.width = "100%";
+        }
+      }
     } else {
       injectSidebar();
       // Show after injecting
@@ -388,53 +397,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 });
-
-// Add this function to test styling
-function testStyling() {
-  const testMessage = `
-<div class="gpt-section">
-  <div class="gpt-section-title">Problem Understanding</div>
-  <div class="gpt-section-content">
-    <p>This is a sample problem understanding section. It shows how regular text looks with the current styling.</p>
-  </div>
-</div>
-
-<div class="gpt-section">
-  <div class="gpt-section-title">Approach</div>
-  <div class="gpt-section-content">
-    <p>Here's a sample approach section. Let's see how <code>code snippets</code> look in the text.</p>
-  </div>
-</div>
-
-<div class="gpt-section">
-  <div class="gpt-section-title">Solution Steps</div>
-  <div class="gpt-section-content">
-    <p>1. First step with some <code>inline code</code></p>
-    <p>2. Second step with <i>italic text</i></p>
-    <p>3. Third step with regular text</p>
-  </div>
-</div>
-
-<div class="gpt-section">
-  <div class="gpt-section-title">Implementation Hints</div>
-  <div class="gpt-section-content">
-    <p>Here's a hint with some <code>code</code> and <i>italic text</i> mixed in.</p>
-  </div>
-</div>
-
-<div class="gpt-section">
-  <div class="gpt-section-title">Next Steps</div>
-  <div class="gpt-section-content">
-    <p>Final section with some concluding text and a <code>code example</code>.</p>
-  </div>
-</div>`;
-
-  const chatContainer = document.getElementById("leetcode-gpt-chat");
-  if (chatContainer) {
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "leetcode-gpt-message assistant";
-    messageDiv.innerHTML = testMessage;
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
-}
