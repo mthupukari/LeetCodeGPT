@@ -1,0 +1,140 @@
+#leetcode-gpt-sidebar {
+  font-family: Menlo, Monaco, 'Courier New', monospace !important;
+  color: var(--text-primary, #e2e2e2);
+  background: #262626;
+  border-left: 1px solid var(--divider-3, #333);
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+#leetcode-gpt-header {
+  width: 100%;
+  height: 36px;
+  margin: 0;
+  padding: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: -apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text-primary, #fff);
+  background: #333;
+  border-bottom: 1px solid var(--divider-3, #333);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+#leetcode-gpt-header > * {
+  font-weight: 500;
+}
+
+#leetcode-gpt-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 20px 0 20px;
+  font-size: 12px;
+  background: transparent;
+}
+
+.leetcode-gpt-message {
+  margin-bottom: 24px;
+  line-height: 1.6;
+  word-break: break-word;
+  padding: 0 4px;
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-primary, #e2e2e2);
+}
+
+.gpt-section {
+  margin-bottom: 20px;
+}
+
+.gpt-section:last-child {
+  margin-bottom: 0;
+}
+
+.gpt-section-title {
+  color: #e2e2e2;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 8px;
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+  text-decoration: underline;
+}
+
+.gpt-section-content {
+  color: var(--text-primary, #e2e2e2);
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+}
+
+.gpt-section-content p {
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gpt-section-content p:last-child {
+  margin-bottom: 0;
+}
+
+.gpt-section-content code {
+  background: #1e1e1e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+  font-size: 11px;
+  color: #dcdcaa;
+}
+
+.leetcode-gpt-message.user {
+  text-align: right;
+  color: #569cd6;
+}
+
+.leetcode-gpt-message.assistant {
+  text-align: left;
+  color: var(--text-primary, #e2e2e2);
+}
+
+.leetcode-gpt-message.assistant i {
+  color: var(--text-primary, #e2e2e2);
+  font-style: italic;
+}
+
+#leetcode-gpt-input {
+  width: calc(100% - 40px);
+  margin: 0 20px 20px 20px;
+  min-height: 44px;
+  max-height: 120px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid var(--divider-3, #333);
+  background: #1e1e1e;
+  color: var(--text-primary, #fff);
+  padding: 10px;
+  font-size: 12px;
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  #leetcode-gpt-sidebar {
+    width: 100vw;
+    min-width: 0;
+    left: 0;
+    right: 0;
+  }
+} 

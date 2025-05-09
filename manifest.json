@@ -12,7 +12,6 @@
     "https://leetcode.com/*"
   ],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "48": "icons/icon-48.png",
@@ -28,7 +27,14 @@
     {
       "matches": ["https://leetcode.com/problems/*"],
       "js": ["config.js", "content.js"],
+      "css": ["sidebar.css"],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["sidebar.css"],
+      "matches": ["https://leetcode.com/*"]
     }
   ],
   "background": {
