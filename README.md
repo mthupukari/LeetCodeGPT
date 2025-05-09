@@ -1,6 +1,6 @@
 # LeetCode GPT Assistant
 
-A Chrome extension that provides GPT-powered hints and guidance while solving LeetCode problems, helping you learn and improve your problem-solving skills without giving away complete solutions.
+A Chrome extension that provides GPT-powered tutor to solve LeetCode problems, helping you learn and improve your problem-solving skills.
 
 <img src="leetcodeGPT-image.png" alt="LeetCode GPT Demo" width=100%/>
 
